@@ -15,10 +15,14 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.persistence.NoResultException;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Objects;
 
 import static org.springframework.http.HttpStatus.*;
@@ -33,6 +37,7 @@ public class ExceptionHandling {
     private static final String ACCOUNT_DISABLED = "Your account has been disabled. If this is an error, please contact administration";
     private static final String ERROR_PROCESSING_FILE = "Error occurred while processing file";
     private static final String NOT_ENOUGH_PERMISSION = "You do not have enough permission";
+    public static final String ERROR_PATH = "/error";
 
     private ResponseEntity<HttpResponse> createHttpResponse(HttpStatus httpStatus, String message) {
         return new ResponseEntity<>(new HttpResponse(httpStatus.value(), httpStatus, httpStatus.getReasonPhrase().toUpperCase(),
@@ -85,6 +90,12 @@ public class ExceptionHandling {
     public ResponseEntity<HttpResponse> userNotFoundException(UserNotFoundException e) {
         return createHttpResponse(BAD_REQUEST, e.getMessage());
     }
+//    @ExceptionHandler(NoHandlerFoundException.class)
+//    public ResponseEntity<HttpResponse> noHandlerFoundException(NoHandlerFoundException e) {
+//        return createHttpResponse(BAD_REQUEST,"This page was not found");
+//    }
+
+
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<HttpResponse> methodNotSupportedException(HttpRequestMethodNotSupportedException e) {
@@ -108,6 +119,11 @@ public class ExceptionHandling {
     public ResponseEntity<HttpResponse> ioException(NoResultException e) {
         log.error(e.getMessage());
         return createHttpResponse(INTERNAL_SERVER_ERROR, ERROR_PROCESSING_FILE);
+    }
+
+    @RequestMapping(ERROR_PATH)
+    public ResponseEntity<HttpResponse> notFound404() {
+        return createHttpResponse(NOT_FOUND, "The is no mapping for this url");
     }
 
 

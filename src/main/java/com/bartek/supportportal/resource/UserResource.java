@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/user")
+@RequestMapping(path = {"/", "/user"})
 public class UserResource extends ExceptionHandling {
 
     @GetMapping("/test")
