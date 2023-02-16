@@ -6,10 +6,10 @@ server:
 #    path: '/error'
 
 spring:
-  mvc:
-    throw-exception-if-no-handler-found: true
-  resources:
-    add-mappings: false
+#  mvc:
+#    throw-exception-if-no-handler-found: true
+#  resources:
+#    add-mappings: false
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/supportportal?useSSL=false&useUnicode=yes&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&serverTimezone=UTC

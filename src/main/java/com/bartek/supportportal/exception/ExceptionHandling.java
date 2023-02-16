@@ -17,12 +17,9 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.persistence.NoResultException;
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Objects;
 
 import static org.springframework.http.HttpStatus.*;
@@ -94,7 +91,6 @@ public class ExceptionHandling {
 //    public ResponseEntity<HttpResponse> noHandlerFoundException(NoHandlerFoundException e) {
 //        return createHttpResponse(BAD_REQUEST,"This page was not found");
 //    }
-
 
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
