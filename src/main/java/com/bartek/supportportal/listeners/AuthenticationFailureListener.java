@@ -1,13 +1,13 @@
 package com.bartek.supportportal.listeners;
 
 import com.bartek.supportportal.service.LoginAttemptService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.authentication.event.AuthenticationFailureBadCredentialsEvent;
 import org.springframework.stereotype.Component;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AuthenticationFailureListener {
     private final LoginAttemptService loginAttemptService;
 
@@ -18,5 +18,6 @@ public class AuthenticationFailureListener {
             String username = (String) principal;
             loginAttemptService.addUserLoginAttemptCache(username);
         }
+        System.out.println("onAuthenticationFailure");
     }
 }

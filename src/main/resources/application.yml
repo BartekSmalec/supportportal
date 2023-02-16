@@ -23,6 +23,9 @@ spring:
     properties:
       dialect: org.hibernate.dialect.MySQL8Dialect
 
+logging:
+  level:
+    root: debug
 jwt:
   secret: 'FdMSpY6dNFlEF3zHVhhIkXEZ0udQCdyzQslxnO9n'
 
