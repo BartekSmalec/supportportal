@@ -7,6 +7,7 @@ import com.bartek.supportportal.exception.domain.UserNotFoundException;
 import com.bartek.supportportal.exception.domain.UsernameExistException;
 import com.bartek.supportportal.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -34,7 +35,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final LoginAttemptService loginAttemptService;
 
+    @SneakyThrows
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findUserByUsername(username);
@@ -42,10 +45,24 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             log.error("User not found by username: " + username);
             throw new UsernameNotFoundException("User not found by username: " + username);
         } else {
+            validateLoginAttempt(user);
             user.setLastLoginDateDisplay(user.getLastLoginDate());
             user.setLastLoginDate(new Date());
             userRepository.save(user);
+            log.info("Found user by username: " + username);
             return new UserPrincipal(user);
+        }
+    }
+
+    private void validateLoginAttempt(User user) {
+        if (user.isNonLocked()) {
+            if (loginAttemptService.hasExceededMaxAttempt(user.getUsername())) {
+                user.setNonLocked(false);
+            } else {
+                user.setNonLocked(true);
+            }
+        } else {
+            loginAttemptService.evictUserFromLoginAttemptCache(user.getUsername());
         }
     }
 
