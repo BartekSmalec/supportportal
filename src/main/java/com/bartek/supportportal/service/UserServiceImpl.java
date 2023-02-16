@@ -36,6 +36,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final LoginAttemptService loginAttemptService;
+    private final EmailService emailService;
 
     @SneakyThrows
     @Override
@@ -86,6 +87,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setProfileImageUrl(getDefaultProfileImageUrl());
 
         User savedUser = userRepository.save(user);
+        emailService.sendNewPasswordEmail(savedUser.getFirstName(), password, email);
         log.info("New user password: " + password);
         return savedUser;
     }

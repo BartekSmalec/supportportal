@@ -28,5 +28,8 @@ logging:
     root: debug
 jwt:
   secret: 'FdMSpY6dNFlEF3zHVhhIkXEZ0udQCdyzQslxnO9n'
+email:
+  username: 'smalecbartlomiej@outlook.com'
+  password: ''
 
 

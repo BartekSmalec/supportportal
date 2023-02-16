@@ -72,6 +72,14 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>3.12.0</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/jakarta.mail/jakarta.mail-api -->
+		<dependency>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>javax.mail</artifactId>
+			<version>1.6.2</version>
+		</dependency>
+
+
 
 	</dependencies>
 
