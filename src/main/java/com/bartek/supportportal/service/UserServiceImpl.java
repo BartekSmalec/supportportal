@@ -22,6 +22,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.util.Date;
 import java.util.List;
 
+import static com.bartek.supportportal.constant.UserImplConstant.*;
 import static com.bartek.supportportal.enumeration.Role.ROLE_USER;
 
 @Slf4j
@@ -73,7 +74,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     private String getDefaultProfileImageUrl() {
-        return ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/image/profile/temp").toUriString();
+        return ServletUriComponentsBuilder.fromCurrentContextPath().path(USER_IMAGE_PROFILE_TEMP).toUriString();
     }
 
     private String encodePassword(String password) {
@@ -89,29 +90,29 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     private User validateNewUsernameAndEmail(String currentUsername, String newUsername, String newEmail) throws UserNotFoundException, UsernameExistException, EmailExistException {
+        User userByNewUsername = findUserByUsername(newUsername);
+        User userByNewEmail = findUserByEmail(newEmail);
+
+
         if (StringUtils.isNoneBlank(currentUsername)) {
             User currentUser = findUserByUsername(currentUsername);
             if (currentUser == null) {
-                throw new UserNotFoundException("No user found by username: " + userRepository);
+                throw new UserNotFoundException(NO_USER_FOUND_BY_USERNAME + userRepository);
             }
-            User userByNewUsername = findUserByUsername(newUsername);
             if (userByNewUsername != null && !currentUser.getId().equals(userByNewUsername.getId())) {
-                throw new UsernameExistException("Username already exist: " + userByNewUsername);
+                throw new UsernameExistException(USERNAME_ALREADY_EXIST + userByNewUsername);
             }
 
-            User userByNewEmail = findUserByEmail(newEmail);
             if (userByNewEmail != null && !currentUser.getId().equals(userByNewEmail.getId())) {
-                throw new EmailExistException("Email already taken: " + userByNewEmail.getEmail());
+                throw new EmailExistException(EMAIL_ALREADY_TAKEN + userByNewEmail.getEmail());
             }
             return currentUser;
         } else {
-            User userByUsername = findUserByUsername(newUsername);
-            if (userByUsername != null) {
-                throw new UsernameExistException("Username already exist: " + userByUsername);
+            if (userByNewUsername != null) {
+                throw new UsernameExistException(USERNAME_ALREADY_EXIST + userByNewUsername);
             }
-            User userByEmail = findUserByEmail(newEmail);
-            if (userByEmail != null) {
-                throw new EmailExistException("Email already taken: " + userByEmail.getEmail());
+            if (userByNewEmail != null) {
+                throw new EmailExistException(EMAIL_ALREADY_TAKEN + userByNewEmail.getEmail());
             }
             return null;
         }
