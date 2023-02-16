@@ -18,6 +18,6 @@ public class AuthenticationFailureListener {
             String username = (String) principal;
             loginAttemptService.addUserLoginAttemptCache(username);
         }
-        System.out.println("onAuthenticationFailure");
     }
 }
+

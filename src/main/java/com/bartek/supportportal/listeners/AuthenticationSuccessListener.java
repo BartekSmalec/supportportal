@@ -19,6 +19,5 @@ public class AuthenticationSuccessListener {
             UserPrincipal user = (UserPrincipal) principal;
             loginAttemptService.evictUserFromLoginAttemptCache(user.getUsername());
         }
-        System.out.println("onAuthenticationSuccess");
     }
 }

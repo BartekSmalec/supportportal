@@ -32,15 +32,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private JwtAuthenticationEntryPoint authenticationEntryPoint;
     private UserDetailsService userDetailsService;
     private BCryptPasswordEncoder passwordEncoder;
+    private AuthenticationEventPublisher authenticationEventPublisher;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
+        auth.authenticationEventPublisher(authenticationEventPublisher);
     }
-    @Bean
-    public AuthenticationEventPublisher authenticationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
-        return new DefaultAuthenticationEventPublisher(applicationEventPublisher);
-    }
+
 
     @Bean
     @Override
