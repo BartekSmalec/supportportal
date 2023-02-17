@@ -71,7 +71,7 @@ public class JwtTokenProvider {
 
     public boolean isTokenValid(String username, String token) {
         JWTVerifier verifier = getJWTVerifier();
-        return StringUtils.isEmpty(username) && isTokenExpired(verifier, token);
+        return StringUtils.isNotEmpty(username) && !isTokenExpired(verifier, token);
     }
 
     private boolean isTokenExpired(JWTVerifier verifier, String token) {

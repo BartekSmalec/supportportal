@@ -171,6 +171,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         String password = generatePassword();
         String encodedPassword = encodePassword(password);
         user.setUserId(generateUserId());
+        user.setUsername(username);
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setJoinDate(new Date());
@@ -188,10 +189,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     private void saveProfileImage(User user, MultipartFile profileImage) throws IOException {
         if (profileImage != null) {
-            Path userFolder = Paths.get(USER_FOLDER + user.getUsername()).toAbsolutePath();
+            Path userFolder = Paths.get(USER_FOLDER + user.getUsername()).toAbsolutePath().normalize();
             if (!Files.exists(userFolder)) {
                 Files.createDirectories(userFolder);
-                log.info(DIRECTORY_CREATED);
+                log.info(DIRECTORY_CREATED + userFolder);
             }
             Files.deleteIfExists(Paths.get(USER_FOLDER + user.getUsername() + DOT + JPG_EXTENSION));
             Files.copy(profileImage.getInputStream(), userFolder.resolve(user.getUsername() + DOT + JPG_EXTENSION), REPLACE_EXISTING);
@@ -202,7 +203,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     private String setProfileImageUrl(String username) {
-        return ServletUriComponentsBuilder.fromCurrentContextPath().path(DEFAULT_USER_IMAGE_PATH + username +
+        return ServletUriComponentsBuilder.fromCurrentContextPath().path(USER_IMAGE_PATH + username +
                 FORWARD_SLASH + username + DOT + JPG_EXTENSION).toUriString();
     }
 
@@ -219,11 +220,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         currentUser.setFirstName(newFirstName);
         currentUser.setLastName(newLastName);
+        currentUser.setUsername(newUsername);
         currentUser.setJoinDate(new Date());
         currentUser.setEmail(newEmail);
         currentUser.setNonLocked(isNonLocked);
         currentUser.setActive(isActive);
         currentUser.setRole(getRoleEnumName(role).name());
+        currentUser.setAuthorities(getRoleEnumName(role).getAuthorities());
         User savedUser = userRepository.save(currentUser);
         saveProfileImage(savedUser, profileImage);
         return currentUser;
