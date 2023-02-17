@@ -17,7 +17,7 @@ import static com.bartek.supportportal.constant.FileConstant.USER_FOLDER;
 
 @SpringBootApplication
 @Configuration
-@EnableAutoConfiguration(exclude= ErrorMvcAutoConfiguration.class)
+@EnableAutoConfiguration(exclude = ErrorMvcAutoConfiguration.class)
 public class SupportportalApplication {
 
     public static void main(String[] args) {
