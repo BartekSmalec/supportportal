@@ -11,6 +11,10 @@ import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.io.File;
+
+import static com.bartek.supportportal.constant.FileConstant.USER_FOLDER;
+
 @SpringBootApplication
 @Configuration
 @EnableAutoConfiguration(exclude= ErrorMvcAutoConfiguration.class)
@@ -18,6 +22,7 @@ public class SupportportalApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(SupportportalApplication.class, args);
+        new File(USER_FOLDER).mkdirs();
     }
 
     @Bean
@@ -29,4 +34,5 @@ public class SupportportalApplication {
     public AuthenticationEventPublisher authenticationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
         return new DefaultAuthenticationEventPublisher(applicationEventPublisher);
     }
+
 }
