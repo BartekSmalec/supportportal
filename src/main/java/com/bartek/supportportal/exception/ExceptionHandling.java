@@ -1,11 +1,9 @@
 package com.bartek.supportportal.exception;
 
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.bartek.supportportal.domain.HttpResponse;
-import com.bartek.supportportal.exception.domain.EmailExistException;
-import com.bartek.supportportal.exception.domain.EmailNotFoundException;
-import com.bartek.supportportal.exception.domain.UserNotFoundException;
-import com.bartek.supportportal.exception.domain.UsernameExistException;
+import com.bartek.supportportal.exception.domain.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +37,16 @@ public class ExceptionHandling {
     private ResponseEntity<HttpResponse> createHttpResponse(HttpStatus httpStatus, String message) {
         return new ResponseEntity<>(new HttpResponse(httpStatus.value(), httpStatus, httpStatus.getReasonPhrase().toUpperCase(),
                 message), httpStatus);
+    }
+
+    @ExceptionHandler(JWTDecodeException.class)
+    public ResponseEntity<HttpResponse> jwtDecodeException() {
+        return createHttpResponse(FORBIDDEN, NOT_ENOUGH_PERMISSION);
+    }
+
+    @ExceptionHandler(NotAnImageFileException.class)
+    public ResponseEntity<HttpResponse> notAnImageFileException(NotAnImageFileException exception) {
+        return createHttpResponse(BAD_REQUEST, exception.getMessage());
     }
 
     @ExceptionHandler(DisabledException.class)
@@ -112,7 +120,7 @@ public class ExceptionHandling {
     }
 
     @ExceptionHandler(IOException.class)
-    public ResponseEntity<HttpResponse> ioException(NoResultException e) {
+    public ResponseEntity<HttpResponse> ioException(IOException e) {
         log.error(e.getMessage());
         return createHttpResponse(INTERNAL_SERVER_ERROR, ERROR_PROCESSING_FILE);
     }

@@ -30,6 +30,7 @@ import java.util.List;
 
 import static com.bartek.supportportal.constant.FileConstant.*;
 import static com.bartek.supportportal.constant.SecurityConstant.JWT_TOKEN_HEADER;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 
 @RestController
@@ -47,7 +48,7 @@ public class UserResource extends ExceptionHandling {
     @PostMapping("/register")
     public ResponseEntity<User> register(@RequestBody User user) throws UserNotFoundException, EmailExistException, UsernameExistException {
         User newUser = userService.register(user.getFirstName(), user.getLastName(), user.getUsername(), user.getEmail());
-        return new ResponseEntity<>(newUser, HttpStatus.OK);
+        return new ResponseEntity<>(newUser, OK);
     }
 
     @PostMapping("/add")
@@ -57,12 +58,12 @@ public class UserResource extends ExceptionHandling {
                                     @RequestParam("email") String email,
                                     @RequestParam("role") String role,
                                     @RequestParam("isActive") String isActive,
-                                    @RequestParam("isNonLocked") String isNonLocked,
+                                    @RequestParam("nonLocked") String nonLocked,
                                     @RequestParam(value = "profileImage", required = false) MultipartFile profileImage)
             throws UserNotFoundException, EmailExistException, IOException, UsernameExistException {
 
         User newUser = userService.addNewUser(firstName, lastName, username, email, role,
-                Boolean.parseBoolean(isNonLocked), Boolean.parseBoolean(isActive), profileImage);
+                Boolean.parseBoolean(nonLocked), Boolean.parseBoolean(isActive), profileImage);
 
         return new ResponseEntity<>(newUser, HttpStatus.CREATED);
     }
@@ -75,12 +76,12 @@ public class UserResource extends ExceptionHandling {
                                        @RequestParam("email") String email,
                                        @RequestParam("role") String role,
                                        @RequestParam("isActive") String isActive,
-                                       @RequestParam("isNonLocked") String isNonLocked,
+                                       @RequestParam("nonLocked") String nonLocked,
                                        @RequestParam(value = "profileImage", required = false) MultipartFile profileImage)
             throws UserNotFoundException, EmailExistException, IOException, UsernameExistException {
 
         User updateUser = userService.updateUser(currentUsername, firstName, lastName, username, email, role,
-                Boolean.parseBoolean(isNonLocked), Boolean.parseBoolean(isActive), profileImage);
+                Boolean.parseBoolean(nonLocked), Boolean.parseBoolean(isActive), profileImage);
 
         return new ResponseEntity<>(updateUser, HttpStatus.CREATED);
     }
@@ -101,32 +102,32 @@ public class UserResource extends ExceptionHandling {
         User loginUser = userService.findUserByUsername(user.getUsername());
         UserPrincipal userPrincipal = new UserPrincipal(loginUser);
         HttpHeaders jwtHeader = getJwtHeader(userPrincipal);
-        return new ResponseEntity<>(loginUser, jwtHeader, HttpStatus.OK);
+        return new ResponseEntity<>(loginUser, jwtHeader, OK);
     }
 
     @GetMapping("/find/{username}")
     public ResponseEntity<User> findUser(@PathVariable("username") String username) {
         User foundUser = userService.findUserByUsername(username);
-        return new ResponseEntity<>(foundUser, HttpStatus.OK);
+        return new ResponseEntity<>(foundUser, OK);
     }
 
     @GetMapping("/list")
     public ResponseEntity<List<User>> userList() {
         List<User> users = userService.getUsers();
-        return new ResponseEntity<>(users, HttpStatus.OK);
+        return new ResponseEntity<>(users, OK);
     }
 
     @GetMapping("/resetPassword/{email}")
     public ResponseEntity<HttpResponse> resetPassword(@PathVariable("email") String email) throws EmailNotFoundException {
         userService.resetPassword(email);
-        return response(HttpStatus.OK, NEW_PASSWORD_WAS_SENT_TO + email);
+        return response(OK, NEW_PASSWORD_WAS_SENT_TO + email);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/delete/{username}")
     @PreAuthorize("hasAnyAuthority('user:delete')")
-    public ResponseEntity<HttpResponse> deleteUser(@PathVariable("id") long id) {
-        userService.deleteUser(id);
-        return response(HttpStatus.NO_CONTENT, USER_DELETED_SUCCESSFULLY);
+    public ResponseEntity<HttpResponse> deleteUser(@PathVariable("username") String username) throws IOException {
+        userService.deleteUser(username);
+        return response(OK, USER_DELETED_SUCCESSFULLY);
     }
 
     @GetMapping(path = "/image/{username}/{filename}", produces = IMAGE_JPEG_VALUE)

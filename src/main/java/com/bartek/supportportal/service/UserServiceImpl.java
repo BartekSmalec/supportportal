@@ -3,16 +3,14 @@ package com.bartek.supportportal.service;
 import com.bartek.supportportal.domain.User;
 import com.bartek.supportportal.domain.UserPrincipal;
 import com.bartek.supportportal.enumeration.Role;
-import com.bartek.supportportal.exception.domain.EmailExistException;
-import com.bartek.supportportal.exception.domain.EmailNotFoundException;
-import com.bartek.supportportal.exception.domain.UserNotFoundException;
-import com.bartek.supportportal.exception.domain.UsernameExistException;
+import com.bartek.supportportal.exception.domain.*;
 import com.bartek.supportportal.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,10 +21,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -35,6 +35,7 @@ import static com.bartek.supportportal.constant.UserImplConstant.*;
 import static com.bartek.supportportal.enumeration.Role.ROLE_USER;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.springframework.http.MediaType.*;
 
 @Slf4j
 @Service
@@ -187,8 +188,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return user;
     }
 
-    private void saveProfileImage(User user, MultipartFile profileImage) throws IOException {
+    private void saveProfileImage(User user, MultipartFile profileImage) throws IOException, NotAnImageFileException {
         if (profileImage != null) {
+            if (!Arrays.asList(IMAGE_JPEG_VALUE, IMAGE_PNG_VALUE, IMAGE_GIF_VALUE).contains(profileImage.getContentType())) {
+                throw new NotAnImageFileException(profileImage.getOriginalFilename() + " is not an image.");
+            }
             Path userFolder = Paths.get(USER_FOLDER + user.getUsername()).toAbsolutePath().normalize();
             if (!Files.exists(userFolder)) {
                 Files.createDirectories(userFolder);
@@ -233,8 +237,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public void deleteUser(long id) {
-        userRepository.deleteById(id);
+    public void deleteUser(String username) {
+        Path userFolder = Paths.get(USER_FOLDER + username).toAbsolutePath().normalize();
+        try {
+            FileUtils.deleteDirectory(new File(userFolder.toString()));
+        } catch (IOException exception) {
+            log.error(exception.getMessage());
+            exception.printStackTrace();
+        }
+        userRepository.deleteByUsername(username);
     }
 
     @Override

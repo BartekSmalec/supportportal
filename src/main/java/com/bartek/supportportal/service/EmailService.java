@@ -34,6 +34,7 @@ public class EmailService {
     }
 
     private Message createEmail(String firstName, String password, String email) throws MessagingException {
+        log.info("email: " + email + "password: " + password);
         Message message = new MimeMessage(getEmailSession());
         message.setFrom(new InternetAddress(FROM_EMAIL));
         message.setRecipients(TO, InternetAddress.parse(email, false));
