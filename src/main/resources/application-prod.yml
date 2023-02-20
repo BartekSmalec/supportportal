@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 5000
   error:
     whitelabel:
       enabled: false
@@ -12,9 +12,9 @@ spring:
   #    add-mappings: false
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/supportportal?useSSL=false&useUnicode=yes&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&serverTimezone=UTC
-    password: Hka3TsoH7XsMisoS
-    username: supportportal
+    url: jdbc:mysql://localhost:3306/supportportal
+    password: 4MlzHbraLZkPvhQ+8VYfueh?5ds
+    username: root
   jpa:
     show-sql: true
     hibernate:
@@ -31,3 +31,5 @@ jwt:
 email:
   username: 'smalecbartlomiej@outlook.com'
   password: 'lWSh4xV4bPXoLps3E'
+
+

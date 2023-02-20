@@ -35,8 +35,7 @@ import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 
 @RestController
 @AllArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
-@RequestMapping(path = {"/", "/user"})
+@RequestMapping(path = {"/user"})
 public class UserResource extends ExceptionHandling {
 
     public static final String NEW_PASSWORD_WAS_SENT_TO = "Email with new password was sent to: ";

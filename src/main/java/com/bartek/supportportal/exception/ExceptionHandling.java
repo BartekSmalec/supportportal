@@ -125,10 +125,10 @@ public class ExceptionHandling {
         return createHttpResponse(INTERNAL_SERVER_ERROR, ERROR_PROCESSING_FILE);
     }
 
-    @RequestMapping(ERROR_PATH)
+ /*   @RequestMapping(ERROR_PATH)
     public ResponseEntity<HttpResponse> notFound404() {
         return createHttpResponse(NOT_FOUND, "The is no mapping for this url");
-    }
+    }*/
 
 
 }
