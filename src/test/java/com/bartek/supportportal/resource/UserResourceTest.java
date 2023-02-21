@@ -2,6 +2,7 @@ package com.bartek.supportportal.resource;
 
 import com.bartek.supportportal.domain.User;
 import com.bartek.supportportal.repository.UserRepository;
+import com.bartek.supportportal.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.minidev.json.JSONObject;
 import org.hamcrest.Matchers;
@@ -10,15 +11,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.FileInputStream;
 import java.util.Arrays;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
+import static org.springframework.http.MediaType.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -34,12 +36,16 @@ class UserResourceTest {
     public static final String PASSWORD = "somepass";
     public static final String USERNAME = "jdoe";
     public static final String USERNAME_OKOT = "okot";
+    public static final String AVATAR_JPG = "src/test/resources/images/avatar.jpg";
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     ObjectMapper objectMapper;
@@ -240,8 +246,14 @@ class UserResourceTest {
     }
 
     @Test
-    void getProfileImage() {
-        //TODO
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void getProfileImage() throws Exception {
+        FileInputStream avatar = new FileInputStream(AVATAR_JPG);
+        MockMultipartFile multipartFile = new MockMultipartFile("profileImage", "avatar.jpg", IMAGE_JPEG_VALUE, avatar);
+        userService.updateProfileImage(one.getUsername(), multipartFile);
+
+        mockMvc.perform(get(API_ROOT + "/image/" + one.getUsername() + "/" + one.getUsername() + ".jpg"))
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -250,7 +262,32 @@ class UserResourceTest {
     }
 
     @Test
-    void updateProfileImage() {
-        //TODO
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void updateProfileImage() throws Exception {
+        FileInputStream avatar = new FileInputStream(AVATAR_JPG);
+        MockMultipartFile multipartFile = new MockMultipartFile("profileImage", "avatar.jpg", IMAGE_JPEG_VALUE, avatar);
+
+
+        mockMvc.perform(multipart(API_ROOT + "/updateProfileImage")
+                        .file(multipartFile)
+                        .param("username", one.getUsername())
+                        .contentType(MULTIPART_FORM_DATA))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.profileImageUrl", Matchers.is("http://localhost/user/image/jdoe/jdoe.jpg")));
+
+    }
+
+    @Test
+    void updateProfileImageNotAuthenticated() throws Exception {
+        FileInputStream avatar = new FileInputStream(AVATAR_JPG);
+        MockMultipartFile multipartFile = new MockMultipartFile("profileImage", "avatar.jpg", IMAGE_JPEG_VALUE, avatar);
+
+
+        mockMvc.perform(multipart(API_ROOT + "/updateProfileImage")
+                        .file(multipartFile)
+                        .param("username", one.getUsername())
+                        .contentType(MULTIPART_FORM_DATA))
+                .andExpect(status().isForbidden());
+
     }
 }
