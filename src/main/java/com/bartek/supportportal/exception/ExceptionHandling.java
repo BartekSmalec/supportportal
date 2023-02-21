@@ -13,7 +13,6 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.persistence.NoResultException;
@@ -95,16 +94,10 @@ public class ExceptionHandling {
     public ResponseEntity<HttpResponse> userNotFoundException(UserNotFoundException e) {
         return createHttpResponse(BAD_REQUEST, e.getMessage());
     }
-//    @ExceptionHandler(NoHandlerFoundException.class)
-//    public ResponseEntity<HttpResponse> noHandlerFoundException(NoHandlerFoundException e) {
-//        return createHttpResponse(BAD_REQUEST,"This page was not found");
-//    }
-
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<HttpResponse> methodNotSupportedException(HttpRequestMethodNotSupportedException e) {
-        String[] supportedMethod = Objects.requireNonNull(e.getSupportedMethods());
-        return createHttpResponse(METHOD_NOT_ALLOWED, String.format(METHOD_IS_NOT_ALLOWED, supportedMethod.toString()));
+    public ResponseEntity<HttpResponse> methodNotSupportedException() {
+        return createHttpResponse(METHOD_NOT_ALLOWED, METHOD_IS_NOT_ALLOWED);
     }
 
     @ExceptionHandler(Exception.class)
@@ -124,11 +117,6 @@ public class ExceptionHandling {
         log.error(e.getMessage());
         return createHttpResponse(INTERNAL_SERVER_ERROR, ERROR_PROCESSING_FILE);
     }
-
- /*   @RequestMapping(ERROR_PATH)
-    public ResponseEntity<HttpResponse> notFound404() {
-        return createHttpResponse(NOT_FOUND, "The is no mapping for this url");
-    }*/
 
 
 }
