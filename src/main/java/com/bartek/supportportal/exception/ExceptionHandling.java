@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.persistence.NoResultException;
+import javax.validation.ConstraintViolationException;
 import java.io.IOException;
-import java.util.Objects;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -41,6 +41,11 @@ public class ExceptionHandling {
     @ExceptionHandler(JWTDecodeException.class)
     public ResponseEntity<HttpResponse> jwtDecodeException() {
         return createHttpResponse(FORBIDDEN, NOT_ENOUGH_PERMISSION);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    ResponseEntity<HttpResponse> handleConstraintViolationException(ConstraintViolationException e) {
+        return createHttpResponse(BAD_REQUEST, e.getMessage());
     }
 
     @ExceptionHandler(NotAnImageFileException.class)
