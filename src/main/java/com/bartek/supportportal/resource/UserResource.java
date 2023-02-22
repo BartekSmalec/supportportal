@@ -11,6 +11,7 @@ import com.bartek.supportportal.exception.domain.UsernameExistException;
 import com.bartek.supportportal.service.UserService;
 import com.bartek.supportportal.utilty.JwtTokenProvider;
 import lombok.AllArgsConstructor;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +37,7 @@ import static com.bartek.supportportal.constant.FileConstant.*;
 import static com.bartek.supportportal.constant.SecurityConstant.JWT_TOKEN_HEADER;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
+import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
 
 @RestController
 @AllArgsConstructor
@@ -135,20 +137,25 @@ public class UserResource extends ExceptionHandling {
     }
 
     @GetMapping(path = "/image/{username}/{filename}", produces = IMAGE_JPEG_VALUE)
-    public byte[] getProfileImage(@NotBlank @PathVariable("username") String username,@NotBlank @PathVariable("filename") String filename) throws IOException {
+    public byte[] getProfileImage(@NotBlank @PathVariable("username") String username, @NotBlank @PathVariable("filename") String filename) throws IOException {
         return Files.readAllBytes(Paths.get(USER_FOLDER + username + FORWARD_SLASH + filename));
     }
 
     @GetMapping(path = "/image/profile/{username}", produces = IMAGE_JPEG_VALUE)
     public byte[] getTempProfileImage(@NotBlank @PathVariable("username") String username) throws IOException {
         URL url = new URL(TEMP_PROFILE_IMAGE_BASE_URL + username);
+
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        try (InputStream inputStream = url.openStream()) {
+        InputStream inputStream = null;
+        try {
+            inputStream = url.openStream();
             int bytesRead;
             byte[] chunk = new byte[1024];
-            while ((bytesRead = inputStream.read()) > 0) {
+            while ((bytesRead = inputStream.read(chunk)) > 0) {
                 byteArrayOutputStream.write(chunk, 0, bytesRead);
             }
+        } finally {
+            IOUtils.closeQuietly(inputStream);
         }
         return byteArrayOutputStream.toByteArray();
     }

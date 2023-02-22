@@ -83,12 +83,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setUserId(generateUserId());
         String password = generatePassword();
         String encodedPassword = encodePassword(password);
+        user.setPassword(encodedPassword);
         user.setFirstName(firstName);
         user.setUsername(username);
         user.setLastName(lastName);
         user.setEmail(email);
         user.setJoinDate(new Date());
-        user.setPassword(encodedPassword);
         user.setActive(true);
         user.setNonLocked(true);
         user.setRole(ROLE_USER.name());
@@ -185,6 +185,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setProfileImageUrl(getDefaultProfileImageUrl(username));
         User savedUser = userRepository.save(user);
         saveProfileImage(savedUser, profileImage);
+
+        emailService.sendNewPasswordEmail(savedUser.getFirstName(), password, email);
+        log.info("New user password: " + password);
         return user;
     }
 
