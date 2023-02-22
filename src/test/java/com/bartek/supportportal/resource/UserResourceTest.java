@@ -257,8 +257,9 @@ class UserResourceTest {
     }
 
     @Test
-    void getTempProfileImage() {
-        //TODO
+    void getTempProfileImage() throws Exception {
+        mockMvc.perform(get(API_ROOT + "/image/profile/" + one.getUsername()))
+                .andExpect(status().isOk());
     }
 
     @Test
