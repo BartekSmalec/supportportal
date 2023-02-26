@@ -3,24 +3,17 @@ server:
   error:
     whitelabel:
       enabled: false
-#    path: '/error'
 
 spring:
-  #  mvc:
-  #    throw-exception-if-no-handler-found: true
-  #  resources:
-  #    add-mappings: false
   config:
     import: optional:secrets.yml
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/supportportal?useSSL=false&useUnicode=yes&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&serverTimezone=UTC
-    #password: Hka3TsoH7XsMisoS
     username: supportportal
   jpa:
     show-sql: true
     hibernate:
-      #      ddl-auto: create
       ddl-auto: update
     properties:
       dialect: org.hibernate.dialect.MySQL8Dialect
