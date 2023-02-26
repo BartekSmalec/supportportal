@@ -10,10 +10,12 @@ spring:
   #    throw-exception-if-no-handler-found: true
   #  resources:
   #    add-mappings: false
+  config:
+    import: optional:secrets-prod.yml
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/supportportal
-    password: 4MlzHbraLZkPvhQ+8VYfueh?5ds
     username: root
   jpa:
     show-sql: true
@@ -26,10 +28,6 @@ spring:
 logging:
   level:
     root: debug
-jwt:
-  secret: 'FdMSpY6dNFlEF3zHVhhIkXEZ0udQCdyzQslxnO9n'
-email:
-  username: 'smalecbartlomiej@outlook.com'
-  password: 'lWSh4xV4bPXoLps3E'
+'
 
 
