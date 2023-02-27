@@ -23,7 +23,7 @@ public class EmailService {
     private JavaMailSender emailSender;
 
 
-    public SimpleMailMessage sendSimpleMessage(String firstName, String password, String email) {
+    public SimpleMailMessage createSimpleMessage(String firstName, String password, String email) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(FROM_EMAIL);
         message.setTo(email);
@@ -35,7 +35,7 @@ public class EmailService {
     public void sendNewPasswordEmail(String firstName, String password, String email) {
         log.info("email: " + email + "password: " + password);
         emailSender = getJavaMailSender();
-        SimpleMailMessage message = sendSimpleMessage(firstName, password, email);
+        SimpleMailMessage message = createSimpleMessage(firstName, password, email);
         emailSender.send(message);
     }
 

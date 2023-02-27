@@ -2,24 +2,32 @@ package com.bartek.supportportal.resource;
 
 import com.bartek.supportportal.domain.User;
 import com.bartek.supportportal.repository.UserRepository;
+import com.bartek.supportportal.service.EmailService;
 import com.bartek.supportportal.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.minidev.json.JSONObject;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.FileInputStream;
 import java.util.Arrays;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -27,6 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
+@ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
 @Transactional
 class UserResourceTest {
@@ -46,6 +55,9 @@ class UserResourceTest {
 
     @Autowired
     private UserService userService;
+
+    @MockBean
+    private EmailService emailService;
 
     @Autowired
     ObjectMapper objectMapper;
@@ -76,6 +88,9 @@ class UserResourceTest {
 
     @Test
     void register() throws Exception {
+
+        doNothing().when(emailService).sendNewPasswordEmail(anyString(),anyString(),anyString());
+
         mockMvc.perform(post(API_ROOT + "/register")
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(three)))
@@ -85,6 +100,9 @@ class UserResourceTest {
 
     @Test
     void addNotAuthenticated() throws Exception {
+
+        doNothing().when(emailService).sendNewPasswordEmail(anyString(),anyString(),anyString());
+
         mockMvc.perform(post(API_ROOT + "/add")
                         .contentType(MULTIPART_FORM_DATA)
                         .param("email", fourth.getEmail())
@@ -101,6 +119,8 @@ class UserResourceTest {
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void addAuthenticated() throws Exception {
+        doNothing().when(emailService).sendNewPasswordEmail(anyString(),anyString(),anyString());
+
         mockMvc.perform(post(API_ROOT + "/add")
                         .contentType(MULTIPART_FORM_DATA)
                         .param("email", fourth.getEmail())
