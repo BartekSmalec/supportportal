@@ -37,7 +37,6 @@ import static com.bartek.supportportal.constant.FileConstant.*;
 import static com.bartek.supportportal.constant.SecurityConstant.JWT_TOKEN_HEADER;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
-import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
 
 @RestController
 @AllArgsConstructor

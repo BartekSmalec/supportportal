@@ -1,6 +1,7 @@
 package com.bartek.supportportal.resource;
 
 import com.bartek.supportportal.domain.User;
+import com.bartek.supportportal.exception.domain.*;
 import com.bartek.supportportal.repository.UserRepository;
 import com.bartek.supportportal.service.EmailService;
 import com.bartek.supportportal.service.UserService;
@@ -12,10 +13,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -25,9 +29,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.FileInputStream;
 import java.util.Arrays;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -80,7 +84,7 @@ class UserResourceTest {
                 .username("rmorty").build();
 
         fourth = User.builder().email("ncage@gmail.com").firstName("Nicolas").lastName("Cage")
-                .username("ncage").role("ROLE_USER").isActive(true).isNonLocked(true).authorities(authorities_user).build();
+                .username("ncage").role("ROLE_USER").isActive(false).isNonLocked(false).authorities(authorities_user).build();
 
         userRepository.saveAll(Arrays.asList(one, two));
     }
@@ -89,7 +93,7 @@ class UserResourceTest {
     @Test
     void register() throws Exception {
 
-        doNothing().when(emailService).sendNewPasswordEmail(anyString(),anyString(),anyString());
+        doNothing().when(emailService).sendNewPasswordEmail(anyString(), anyString(), anyString());
 
         mockMvc.perform(post(API_ROOT + "/register")
                         .contentType(APPLICATION_JSON)
@@ -99,9 +103,35 @@ class UserResourceTest {
     }
 
     @Test
+    void registerUserThatExist() throws Exception {
+
+        doNothing().when(emailService).sendNewPasswordEmail(anyString(), anyString(), anyString());
+
+        mockMvc.perform(post(API_ROOT + "/register")
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(one)))
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof UsernameExistException));
+    }
+
+    @Test
+    void registerEmailThatExist() throws Exception {
+
+        doNothing().when(emailService).sendNewPasswordEmail(anyString(), anyString(), anyString());
+
+        three.setEmail(one.getEmail());
+
+        mockMvc.perform(post(API_ROOT + "/register")
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(three)))
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof EmailExistException));
+    }
+
+    @Test
     void addNotAuthenticated() throws Exception {
 
-        doNothing().when(emailService).sendNewPasswordEmail(anyString(),anyString(),anyString());
+        doNothing().when(emailService).sendNewPasswordEmail(anyString(), anyString(), anyString());
 
         mockMvc.perform(post(API_ROOT + "/add")
                         .contentType(MULTIPART_FORM_DATA)
@@ -119,7 +149,7 @@ class UserResourceTest {
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void addAuthenticated() throws Exception {
-        doNothing().when(emailService).sendNewPasswordEmail(anyString(),anyString(),anyString());
+        doNothing().when(emailService).sendNewPasswordEmail(anyString(), anyString(), anyString());
 
         mockMvc.perform(post(API_ROOT + "/add")
                         .contentType(MULTIPART_FORM_DATA)
@@ -151,6 +181,22 @@ class UserResourceTest {
                 .andExpect(jsonPath("$.email", Matchers.is("newemail@email.com")));
     }
 
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void updateAuthenticatedCurrentUserDontExist() throws Exception {
+        mockMvc.perform(post(API_ROOT + "/update")
+                        .contentType(MULTIPART_FORM_DATA)
+                        .param("currentUsername", "usernamethatdontexist")
+                        .param("email", "newemail@email.com")
+                        .param("firstName", two.getFirstName())
+                        .param("isActive", String.valueOf(two.isActive()))
+                        .param("lastName", two.getLastName())
+                        .param("nonLocked", String.valueOf(fourth.isNonLocked()))
+                        .param("role", two.getRole())
+                        .param("username", two.getUsername()))
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof UserNotFoundException));
+    }
 
     @Test
     void updateNotAuthenticated() throws Exception {
@@ -180,6 +226,7 @@ class UserResourceTest {
                         .contentType(APPLICATION_JSON)
                         .content(json.toJSONString()))
                 .andExpect(status().isBadRequest())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof BadCredentialsException))
                 .andExpect(jsonPath("$.httpStatus", Matchers.is("BAD_REQUEST")));
 
     }
@@ -197,6 +244,44 @@ class UserResourceTest {
                         .content(json.toJSONString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email", Matchers.is(one.getEmail())));
+
+    }
+
+    @Test
+    void loginAccountLocked() throws Exception {
+
+        one.setNonLocked(false);
+        userRepository.save(one);
+
+        JSONObject json = new JSONObject();
+        json.put("username", one.getUsername());
+        json.put("password", PASSWORD);
+
+        mockMvc.perform(post(API_ROOT + "/login")
+                        .accept(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
+                        .content(json.toJSONString()))
+                .andExpect(status().isUnauthorized())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof LockedException));
+
+    }
+
+    @Test
+    void loginAccountNotActive() throws Exception {
+
+        one.setActive(false);
+        userRepository.save(one);
+
+        JSONObject json = new JSONObject();
+        json.put("username", one.getUsername());
+        json.put("password", PASSWORD);
+
+        mockMvc.perform(post(API_ROOT + "/login")
+                        .accept(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
+                        .content(json.toJSONString()))
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof DisabledException));
 
     }
 
@@ -246,6 +331,14 @@ class UserResourceTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void resetPasswordAuthenticatedUserNotFound() throws Exception {
+        mockMvc.perform(get(API_ROOT + "/resetPassword/" + "emailthatdontexist@email.com"))
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof EmailNotFoundException));
+    }
+
+    @Test
     void deleteUserNoAuthentication() throws Exception {
         mockMvc.perform(delete(API_ROOT + "/delete/" + USERNAME_OKOT))
                 .andExpect(status().isForbidden());
@@ -262,7 +355,8 @@ class UserResourceTest {
     @WithMockUser(username = "manager", authorities = {"user:read", "user:update"})
     void deleteUserAnonymousUser() throws Exception {
         mockMvc.perform(delete(API_ROOT + "/delete/" + USERNAME_OKOT))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isForbidden())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof AccessDeniedException));
     }
 
     @Test
@@ -295,6 +389,22 @@ class UserResourceTest {
                         .contentType(MULTIPART_FORM_DATA))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.profileImageUrl", Matchers.is("http://localhost/user/image/jdoe/jdoe.jpg")));
+
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void updateProfileImageWithNotAnImage() throws Exception {
+        FileInputStream avatar = new FileInputStream(AVATAR_JPG);
+        MockMultipartFile multipartFile = new MockMultipartFile("profileImage", "avatar.txt", TEXT_PLAIN_VALUE, avatar);
+
+
+        mockMvc.perform(multipart(API_ROOT + "/updateProfileImage")
+                        .file(multipartFile)
+                        .param("username", one.getUsername())
+                        .contentType(MULTIPART_FORM_DATA))
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof NotAnImageFileException));
 
     }
 
