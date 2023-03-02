@@ -38,6 +38,8 @@ public class ExceptionHandling {
                 message), httpStatus);
     }
 
+
+
     @ExceptionHandler(JWTDecodeException.class)
     public ResponseEntity<HttpResponse> jwtDecodeException() {
         return createHttpResponse(FORBIDDEN, NOT_ENOUGH_PERMISSION);

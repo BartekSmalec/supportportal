@@ -25,7 +25,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 
+import javax.validation.ConstraintViolationException;
 import java.io.FileInputStream;
 import java.util.Arrays;
 
@@ -300,6 +302,7 @@ class UserResourceTest {
                 .andExpect(status().isOk());
     }
 
+
     @Test
     void userListNotAuthenticated() throws Exception {
         mockMvc.perform(get(API_ROOT + "/list"))
@@ -318,6 +321,8 @@ class UserResourceTest {
 
     @Test
     void resetPasswordNoAuthentication() throws Exception {
+        doNothing().when(emailService).sendNewPasswordEmail(anyString(), anyString(), anyString());
+
         mockMvc.perform(get(API_ROOT + "/resetPassword/" + one.getEmail()))
                 .andExpect(status().isForbidden());
     }
@@ -325,10 +330,24 @@ class UserResourceTest {
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void resetPasswordAuthenticated() throws Exception {
+        doNothing().when(emailService).sendNewPasswordEmail(anyString(), anyString(), anyString());
+
         mockMvc.perform(get(API_ROOT + "/resetPassword/" + one.getEmail()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.httpStatus", Matchers.is("OK")));
     }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void resetPasswordWithNotValidEmail() throws Exception {
+        doNothing().when(emailService).sendNewPasswordEmail(anyString(), anyString(), anyString());
+
+        mockMvc.perform(get(API_ROOT + "/resetPassword/" + "notvalidemail"))
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ConstraintViolationException));
+
+    }
+
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
@@ -350,6 +369,16 @@ class UserResourceTest {
         mockMvc.perform(delete(API_ROOT + "/delete/" + USERNAME_OKOT))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    @WithMockUser(username = "admin", authorities = {"user:delete"})
+    void deleteUserMethodNotAllowe() throws Exception {
+        mockMvc.perform(get(API_ROOT + "/delete/" + USERNAME_OKOT))
+                .andExpect(status().isMethodNotAllowed())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof HttpRequestMethodNotSupportedException));
+    }
+
+    //HttpRequestMethodNotSupportedException
 
     @Test
     @WithMockUser(username = "manager", authorities = {"user:read", "user:update"})
