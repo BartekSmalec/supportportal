@@ -5,6 +5,9 @@ server:
       enabled: false
 
 spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
   config:
     import: optional:secrets.yml
   datasource:
@@ -27,3 +30,8 @@ spring:
 logging:
   level:
     root: debug
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
