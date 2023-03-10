@@ -19,13 +19,14 @@ jobs:
     steps:
       # Checkout the code as the first step.
       - checkout
-      # Check maven version
       - run:
           name: Set JAVA_TOOL_OPTIONS
           command: |
-            echo "export JAVA_TOOL_OPTIONS="--add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED" >> $BASH_ENV
+            echo "export JAVA_TOOL_OPTIONS='-Dfile.encoding=UTF8 --add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED'" >> $BASH_ENV
             source $BASH_ENV
-      - run: mvn -version
+                      
+      # Check maven version
+      - run: java --version
       # Use mvn clean and package as the standard maven build phase
       - run:
           name: Build
