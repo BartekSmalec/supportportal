@@ -52,7 +52,19 @@ jobs:
       - run:
           name: Start Application on EC2 instance
           command: |
-            ssh $SSH_USER@$SSH_HOST "nohup java -jar /home/ec2-user/supportportal/supportportal.jar --spring.profiles.active=prod"
+            ssh $SSH_USER@$SSH_HOST "nohup java -jar /home/ec2-user/supportportal/supportportal.jar --spring.profiles.active=prod > /dev/null 2>&1 &"
+      - run:
+          name: Check Application Health
+          command: |
+            sleep 30 # Wait for the application to start
+            RESPONSE=$(curl -s http://18.185.238.10:5000/actuator/health) # Send a request to the application's /actuator/health endpoint
+            echo $RESPONSE
+            if [[ "$RESPONSE" == *"\"status\":\"UP\""* ]]; then
+              echo "Application is running and healthy"
+            else
+              echo "Application is not running or is not healthy"
+              exit 1
+            fi
       - run:
           name: Upload reports to Codecov
           command: curl -Os https://uploader.codecov.io/latest/linux/codecov && chmod +x codecov && ./codecov
