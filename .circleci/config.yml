@@ -44,7 +44,7 @@ jobs:
       
       - run:
           name: Remove previous jar
-          command: ssh $SSH_USER@$SSH_HOST 'rm /home/ec2-user/supportportal.jar'
+          command: ssh $SSH_USER@$SSH_HOST 'rm /home/ec2-user/supportportal/supportportal.jar'
       - run:
           name: Copy JAR to EC2 instance
           command: |
