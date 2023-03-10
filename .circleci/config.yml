@@ -41,6 +41,10 @@ jobs:
           command: mvn integration-test
       - store_artifacts:
           path: target
+      
+      - run:
+          name: Remove previous jar
+          command: ssh $SSH_USER@$SSH_HOST 'rm /home/ec2-user/supportportal.jar'
       - run:
           name: Copy JAR to EC2 instance
           command: |
