@@ -27,6 +27,8 @@ jobs:
     steps:
       # Checkout the code as the first step.
       - checkout
+      # Check maven version
+      - run: mvn -version
       # Use mvn clean and package as the standard maven build phase
       - run:
           name: Build
