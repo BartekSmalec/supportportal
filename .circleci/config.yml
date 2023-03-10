@@ -52,7 +52,7 @@ jobs:
       - run:
           name: Start Application on EC2 instance
           command: |
-            ssh $SSH_USER@$SSH_HOST "java -jar /home/ec2-user/supportportal/supportportal.jar --spring.profiles.active=prod"
+            ssh $SSH_USER@$SSH_HOST "nohup java -jar /home/ec2-user/supportportal/supportportal.jar --spring.profiles.active=prod"
       - run:
           name: Upload reports to Codecov
           command: curl -Os https://uploader.codecov.io/latest/linux/codecov && chmod +x codecov && ./codecov
