@@ -58,7 +58,7 @@ public class SupportportalApplication {
     CorsConfiguration corsConfiguration = new CorsConfiguration();
     corsConfiguration.setAllowCredentials(true);
     corsConfiguration.setAllowedOrigins(
-        Arrays.asList("http://localhost:4200", "http://18.196.218.229"));
+        Arrays.asList("http://localhost:4200", "http://18.196.218.229","http://18.185.238.10"));
     corsConfiguration.setAllowedHeaders(
         Arrays.asList(
             "Origin",
