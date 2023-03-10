@@ -29,8 +29,8 @@ jobs:
       - run: mvn -version
       # Use mvn clean and package as the standard maven build phase
       - run:
-          name: Build
-          command: mvn -B -DskipTests clean package
+          name: Build JAR
+          command: mvn clean package -DskipTests -Pprod
       # check code with spotless
       - run:
           name: Run Spotless check
@@ -41,7 +41,14 @@ jobs:
           command: mvn integration-test
       - store_artifacts:
           path: target
-
+      - run:
+          name: Copy JAR to EC2 instance
+          command: |
+            scp target/supportportal.jar $SSH_USER@$SSH_HOST:/home/ec2-user/supportportal
+      - run:
+          name: Start Application on EC2 instance
+          command: |
+            ssh $SSH_USER@$SSH_HOST "java -jar /home/ec2-user/supportportal/supportportal.jar --spring.profiles.active=prod > /dev/null 2>&1 &"
       - run:
           name: Upload reports to Codecov
           command: curl -Os https://uploader.codecov.io/latest/linux/codecov && chmod +x codecov && ./codecov
@@ -49,7 +56,7 @@ jobs:
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  sample: # This is the name of the workflow, feel free to change it to better match your workflow.
+  supportportal-worlflow: # This is the name of the workflow, feel free to change it to better match your workflow.
     # Inside the workflow, you define the jobs you want to run.
     jobs:
       - build-and-test
