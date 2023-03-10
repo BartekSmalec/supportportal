@@ -1,5 +1,12 @@
 package com.bartek.supportportal;
 
+import static com.bartek.supportportal.constant.FileConstant.USER_FOLDER;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.CorsEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
@@ -23,67 +30,95 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
-import static com.bartek.supportportal.constant.FileConstant.USER_FOLDER;
-
 @SpringBootApplication
 @Configuration
 @EnableWebMvc
 public class SupportportalApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(SupportportalApplication.class, args);
-        new File(USER_FOLDER).mkdirs();
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(SupportportalApplication.class, args);
+    new File(USER_FOLDER).mkdirs();
+  }
 
-    @Bean
-    BCryptPasswordEncoder getPasswordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+  @Bean
+  BCryptPasswordEncoder getPasswordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
-    @Bean
-    public AuthenticationEventPublisher authenticationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
-        return new DefaultAuthenticationEventPublisher(applicationEventPublisher);
-    }
+  @Bean
+  public AuthenticationEventPublisher authenticationEventPublisher(
+      ApplicationEventPublisher applicationEventPublisher) {
+    return new DefaultAuthenticationEventPublisher(applicationEventPublisher);
+  }
 
-    @Bean
-    public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.setAllowedOrigins(Arrays.asList("http://localhost:4200", "http://18.196.218.229"));
-        corsConfiguration.setAllowedHeaders(Arrays.asList("Origin", "Access-Control-Allow-Origin", "Content-Type",
-                "Accept", "Jwt-Token", "Authorization", "Origin, Accept", "X-Requested-With",
-                "Access-Control-Request-Method", "Access-Control-Request-Headers"));
-        corsConfiguration.setExposedHeaders(Arrays.asList("Origin", "Content-Type", "Accept", "Jwt-Token", "Authorization",
-                "Access-Control-Allow-Origin", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"));
-        corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
+  @Bean
+  public CorsFilter corsFilter() {
+    UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource =
+        new UrlBasedCorsConfigurationSource();
+    CorsConfiguration corsConfiguration = new CorsConfiguration();
+    corsConfiguration.setAllowCredentials(true);
+    corsConfiguration.setAllowedOrigins(
+        Arrays.asList("http://localhost:4200", "http://18.196.218.229"));
+    corsConfiguration.setAllowedHeaders(
+        Arrays.asList(
+            "Origin",
+            "Access-Control-Allow-Origin",
+            "Content-Type",
+            "Accept",
+            "Jwt-Token",
+            "Authorization",
+            "Origin, Accept",
+            "X-Requested-With",
+            "Access-Control-Request-Method",
+            "Access-Control-Request-Headers"));
+    corsConfiguration.setExposedHeaders(
+        Arrays.asList(
+            "Origin",
+            "Content-Type",
+            "Accept",
+            "Jwt-Token",
+            "Authorization",
+            "Access-Control-Allow-Origin",
+            "Access-Control-Allow-Origin",
+            "Access-Control-Allow-Credentials"));
+    corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
 
-        return new CorsFilter(urlBasedCorsConfigurationSource);
-    }
+    return new CorsFilter(urlBasedCorsConfigurationSource);
+  }
 
-    @Bean
-    public WebMvcEndpointHandlerMapping webEndpointServletHandlerMapping(WebEndpointsSupplier webEndpointsSupplier, ServletEndpointsSupplier servletEndpointsSupplier, ControllerEndpointsSupplier controllerEndpointsSupplier, EndpointMediaTypes endpointMediaTypes, CorsEndpointProperties corsProperties, WebEndpointProperties webEndpointProperties, Environment environment) {
-        List<ExposableEndpoint<?>> allEndpoints = new ArrayList();
-        Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
-        allEndpoints.addAll(webEndpoints);
-        allEndpoints.addAll(servletEndpointsSupplier.getEndpoints());
-        allEndpoints.addAll(controllerEndpointsSupplier.getEndpoints());
-        String basePath = webEndpointProperties.getBasePath();
-        EndpointMapping endpointMapping = new EndpointMapping(basePath);
-        boolean shouldRegisterLinksMapping = this.shouldRegisterLinksMapping(webEndpointProperties, environment, basePath);
-        return new WebMvcEndpointHandlerMapping(endpointMapping, webEndpoints, endpointMediaTypes, corsProperties.toCorsConfiguration(), new EndpointLinksResolver(allEndpoints, basePath), shouldRegisterLinksMapping, null);
-    }
+  @Bean
+  public WebMvcEndpointHandlerMapping webEndpointServletHandlerMapping(
+      WebEndpointsSupplier webEndpointsSupplier,
+      ServletEndpointsSupplier servletEndpointsSupplier,
+      ControllerEndpointsSupplier controllerEndpointsSupplier,
+      EndpointMediaTypes endpointMediaTypes,
+      CorsEndpointProperties corsProperties,
+      WebEndpointProperties webEndpointProperties,
+      Environment environment) {
+    List<ExposableEndpoint<?>> allEndpoints = new ArrayList();
+    Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
+    allEndpoints.addAll(webEndpoints);
+    allEndpoints.addAll(servletEndpointsSupplier.getEndpoints());
+    allEndpoints.addAll(controllerEndpointsSupplier.getEndpoints());
+    String basePath = webEndpointProperties.getBasePath();
+    EndpointMapping endpointMapping = new EndpointMapping(basePath);
+    boolean shouldRegisterLinksMapping =
+        this.shouldRegisterLinksMapping(webEndpointProperties, environment, basePath);
+    return new WebMvcEndpointHandlerMapping(
+        endpointMapping,
+        webEndpoints,
+        endpointMediaTypes,
+        corsProperties.toCorsConfiguration(),
+        new EndpointLinksResolver(allEndpoints, basePath),
+        shouldRegisterLinksMapping,
+        null);
+  }
 
-
-    private boolean shouldRegisterLinksMapping(WebEndpointProperties webEndpointProperties, Environment environment, String basePath) {
-        return webEndpointProperties.getDiscovery().isEnabled() && (StringUtils.hasText(basePath) || ManagementPortType.get(environment).equals(ManagementPortType.DIFFERENT));
-    }
-
+  private boolean shouldRegisterLinksMapping(
+      WebEndpointProperties webEndpointProperties, Environment environment, String basePath) {
+    return webEndpointProperties.getDiscovery().isEnabled()
+        && (StringUtils.hasText(basePath)
+            || ManagementPortType.get(environment).equals(ManagementPortType.DIFFERENT));
+  }
 }

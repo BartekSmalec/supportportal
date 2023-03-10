@@ -1,7 +1,7 @@
 package com.bartek.supportportal.exception.domain;
 
 public class UsernameExistException extends Exception {
-    public UsernameExistException(String message) {
-        super(message);
-    }
+  public UsernameExistException(String message) {
+    super(message);
+  }
 }

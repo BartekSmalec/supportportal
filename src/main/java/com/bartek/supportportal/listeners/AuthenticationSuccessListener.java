@@ -10,14 +10,14 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class AuthenticationSuccessListener {
-    private final LoginAttemptService loginAttemptService;
+  private final LoginAttemptService loginAttemptService;
 
-    @EventListener
-    public void onAuthenticationSuccess(AuthenticationSuccessEvent event) {
-        Object principal = event.getAuthentication().getPrincipal();
-        if (principal instanceof UserPrincipal) {
-            UserPrincipal user = (UserPrincipal) principal;
-            loginAttemptService.evictUserFromLoginAttemptCache(user.getUsername());
-        }
+  @EventListener
+  public void onAuthenticationSuccess(AuthenticationSuccessEvent event) {
+    Object principal = event.getAuthentication().getPrincipal();
+    if (principal instanceof UserPrincipal) {
+      UserPrincipal user = (UserPrincipal) principal;
+      loginAttemptService.evictUserFromLoginAttemptCache(user.getUsername());
     }
+  }
 }

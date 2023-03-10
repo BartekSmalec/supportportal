@@ -10,8 +10,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @ActiveProfiles("test-containers")
 class SupportportalApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
-
+  @Test
+  void contextLoads() {}
 }

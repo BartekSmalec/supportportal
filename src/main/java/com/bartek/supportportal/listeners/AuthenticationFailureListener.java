@@ -9,15 +9,14 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class AuthenticationFailureListener {
-    private final LoginAttemptService loginAttemptService;
+  private final LoginAttemptService loginAttemptService;
 
-    @EventListener
-    public void onAuthenticationFailure(AuthenticationFailureBadCredentialsEvent event) {
-        Object principal = event.getAuthentication().getPrincipal();
-        if (principal instanceof String) {
-            String username = (String) principal;
-            loginAttemptService.addUserLoginAttemptCache(username);
-        }
+  @EventListener
+  public void onAuthenticationFailure(AuthenticationFailureBadCredentialsEvent event) {
+    Object principal = event.getAuthentication().getPrincipal();
+    if (principal instanceof String) {
+      String username = (String) principal;
+      loginAttemptService.addUserLoginAttemptCache(username);
     }
+  }
 }
-
