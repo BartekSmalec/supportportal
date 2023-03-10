@@ -30,7 +30,7 @@ jobs:
       # Use mvn clean and package as the standard maven build phase
       - run:
           name: Build JAR
-          command: mvn clean package -DskipTests -Pprod
+          command: mvn clean package -DskipTests
       # check code with spotless
       - run:
           name: Run Spotless check

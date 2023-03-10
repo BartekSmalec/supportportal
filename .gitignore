@@ -140,4 +140,5 @@ Desktop.ini
 ######################
 .eslintcache
 /.idea/
+src/main/resources/secrets.yml
 
