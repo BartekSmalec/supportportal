@@ -26,7 +26,7 @@ This job is responsible for building and testing the application. It uses Maven 
 
 #### Deploy to EC2 Job
 
-This job deploys the application to an EC2 instance using SSH and Docker. It requires the artifacts from the Build and Test job and runs the application on the EC2 instance.
+This job deploys the application to an EC2 instance using SSH and built jar file. It requires the artifacts from the Build and Test job and runs the application on the EC2 instance.
 
 ### Workflow
 
