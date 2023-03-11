@@ -26,9 +26,19 @@ jobs:
    
                       
       # Use mvn clean and package as the standard maven build phase
+      # - run:
+      #     name: Test and  build jar
+      #     command: mvn -T 4 -B -V clean verify
+      - run: mvn clean package --batch-mode --quiet
       - run:
-          name: Test and  build jar
-          command: mvn -T 4 -B -V clean verify
+          name: Run tests
+          command: |
+            TEST_FILES="$(find src/test/java -name '*Test.java' | xargs -I {} echo "file://{}")"
+            TEST_FILES_PER_CPU=$(echo "$TEST_FILES" | wc -l | awk '{print int($1/4)}')
+            for i in $(seq 1 4); do
+              echo "Running tests on CPU $i"
+              echo "$TEST_FILES" | sed "${i}q;d" | xargs -I {} mvn -B -Dtest={} test
+            done
 
           
       # check code with spotless
