@@ -36,7 +36,7 @@ jobs:
 
   deploy-to-ec2:
     docker: 
-      - image: docker:20.10.git
+      - image: openjdk:16-jdk-alpine
     steps:    
       - run:
           name: Remove previous jar
