@@ -32,7 +32,7 @@ jobs:
       - persist_to_workspace:
           root: target
           paths:
-            - target/supportportal.jar
+            - supportportal.jar
 
       - run:
           name: Upload reports to Codecov
