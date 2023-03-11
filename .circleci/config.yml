@@ -32,7 +32,7 @@ jobs:
       - persist_to_workspace:
           root: target
           paths:
-            - supportportal.jar
+            - target/supportportal.jar
 
       - run:
           name: Upload reports to Codecov
@@ -57,7 +57,7 @@ jobs:
          name: Fetch JAR from workspace
          command: |
           mkdir -p target && \
-          cp $CIRCLE_WORKING_DIRECTORY/target/supportportal.jar target/supportportal.jar
+          cp target/supportportal.jar ~/project/target/supportportal.jar
       - run:
           name: Remove previous jar
           command: ssh $SSH_USER@$SSH_HOST 'rm /home/ec2-user/supportportal/supportportal.jar'
