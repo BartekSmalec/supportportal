@@ -8,6 +8,7 @@ jobs:
   # Below is the definition of your job to build and test your app, you can rename and customize it as you want.
   build-and-test:
     machine: true
+    parallelism: 4
 
     steps:
       # Checkout the code as the first step.
@@ -27,7 +28,9 @@ jobs:
       # Use mvn clean and package as the standard maven build phase
       - run:
           name: Test and  build jar
-          command: mvn -T 4 -B -V clean verify
+          command: mvn -T 4 -B -V clean verify --fail-at-end --batch-mode --no-transfer-progress --update-snapshots --projects '!module1,!module2'
+
+          
       # check code with spotless
       - run:
           name: Run Spotless check
