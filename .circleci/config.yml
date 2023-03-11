@@ -41,8 +41,9 @@ jobs:
           key: v1-dependencies-{{ checksum "pom.xml" }}
 
 
-      # - store_artifacts:
-      #     path: target
+      - store_artifacts:
+          path: target
+
       - persist_to_workspace:
           root: target
           paths:
