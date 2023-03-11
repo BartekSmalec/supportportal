@@ -37,7 +37,13 @@ jobs:
   deploy-to-ec2:
     docker: 
       - image: openjdk:16-jdk-alpine
-    steps:    
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            apk update && apk upgrade && \
+            apk add --no-cache bash openssh    
       - run:
           name: Remove previous jar
           command: ssh $SSH_USER@$SSH_HOST 'rm /home/ec2-user/supportportal/supportportal.jar'
