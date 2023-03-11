@@ -41,9 +41,9 @@ jobs:
 
 
       - store_artifacts:
-          path: target
+          path: target/my-reports
       - store_test_results:
-          path: target/surefire-reports
+          path: target/my-reports
 
       - persist_to_workspace:
           root: target
