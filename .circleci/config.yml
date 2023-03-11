@@ -55,17 +55,12 @@ jobs:
       - attach_workspace:
           at: target
       - run:
-         name: Fetch JAR from workspace
-         command: |
-          mkdir -p target && \
-          cp target/supportportal.jar ~/project/target/supportportal.jar
-      - run:
           name: Remove previous jar
           command: ssh $SSH_USER@$SSH_HOST 'rm /home/ec2-user/supportportal/supportportal.jar'
       - run:
           name: Copy JAR to EC2 instance
           command: |
-            scp target/supportportal.jar $SSH_USER@$SSH_HOST:/home/ec2-user/supportportal
+            scp /root/project/target/supportportal.jar $SSH_USER@$SSH_HOST:/home/ec2-user/supportportal
       - run:
           name: Start Application on EC2 instance
           command: |
