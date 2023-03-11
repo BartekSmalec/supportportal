@@ -47,7 +47,7 @@ jobs:
           name: Install dependencies
           command: |
             apk update && apk upgrade && \
-            apk add --no-cache bash openssh  
+            apk add --no-cache bash openssh curl 
       - run:
           name: Authenticate with SSH Key
           command: |
