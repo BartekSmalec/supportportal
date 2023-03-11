@@ -27,8 +27,8 @@ jobs:
           name: Run Spotless check
           command: mvn spotless:check
 
-      - store_artifacts:
-          path: target
+      # - store_artifacts:
+      #     path: target
       - persist_to_workspace:
           root: target
           paths:
@@ -43,7 +43,6 @@ jobs:
       - image: openjdk:16-jdk-alpine
     steps:
       - checkout
-     
       - run:
           name: Install dependencies
           command: |
@@ -53,6 +52,8 @@ jobs:
           name: Authenticate with SSH Key
           command: |
             mkdir -p ~/.ssh && echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa && ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
+      - attach_workspace:
+          at: target
       - run:
          name: Fetch JAR from workspace
          command: |
