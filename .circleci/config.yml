@@ -28,7 +28,7 @@ jobs:
       # Use mvn clean and package as the standard maven build phase
       - run:
           name: Test and  build jar
-          command: mvn -T 4 -B -V clean verify --fail-at-end --batch-mode --no-transfer-progress --update-snapshots --projects '!module1,!module2'
+          command: mvn -T 4 -B -V clean verify
 
           
       # check code with spotless
