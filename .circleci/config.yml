@@ -68,7 +68,7 @@ jobs:
       - run:
           name: Check Application Health
           command: |
-            sleep 30 # Wait for the application to start
+            sleep 45 # Wait for the application to start
             RESPONSE=$(curl -s http://$BACKEND_IP/actuator/health) # Send a request to the application's /actuator/health endpoint
             echo $RESPONSE
             if [[ "$RESPONSE" == *"\"status\":\"UP\""* ]]; then
