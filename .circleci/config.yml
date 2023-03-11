@@ -12,31 +12,17 @@ jobs:
     steps:
       # Checkout the code as the first step.
       - checkout
+           # Restore the cached Maven dependencies, if any.
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "pom.xml" }}
       - run:
           name: Set JAVA_TOOL_OPTIONS
           command: |
             echo "export JAVA_TOOL_OPTIONS='-Dfile.encoding=UTF8 --add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED'" >> $BASH_ENV
             source $BASH_ENV
       
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "pom.xml" }}
-            - v1-dependencies-
-
-      - run:
-          name: Cache Maven Dependencies
-          command: |
-            if [ ! -d ~/m2 ]; then
-              mkdir -p ~/m2
-            fi
-            cp -r ~/.m2/repository ~/m2
-          working_directory: /root/project
-
-      - save_cache:
-          paths:
-            - ~/m2
-          key: v1-dependencies-{{ checksum "pom.xml" }}
-
+   
                       
       # Use mvn clean and package as the standard maven build phase
       - run:
@@ -46,6 +32,14 @@ jobs:
       - run:
           name: Run Spotless check
           command: mvn spotless:check
+      
+
+      # Cache the Maven dependencies.
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: v1-dependencies-{{ checksum "pom.xml" }}
+
 
       # - store_artifacts:
       #     path: target
