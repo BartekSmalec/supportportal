@@ -54,6 +54,11 @@ jobs:
           command: |
             mkdir -p ~/.ssh && echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa && ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
       - run:
+         name: Fetch JAR from workspace
+         command: |
+          mkdir -p target && \
+          cp $CIRCLE_WORKING_DIRECTORY/target/supportportal.jar target/supportportal.jar
+      - run:
           name: Remove previous jar
           command: ssh $SSH_USER@$SSH_HOST 'rm /home/ec2-user/supportportal/supportportal.jar'
       - run:
