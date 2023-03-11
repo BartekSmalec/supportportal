@@ -47,7 +47,7 @@ jobs:
           name: Install dependencies
           command: |
             apk update && apk upgrade && \
-            apk add --no-cache bash openssh curl 
+            apk add --no-cache bash openssh curl grep
       - run:
           name: Authenticate with SSH Key
           command: |
@@ -68,11 +68,10 @@ jobs:
       - run:
           name: Check Application Health
           command: |
-            sleep 45 # Wait for the application to start
-            curl http://$BACKEND_IP/
-            RESPONSE=$(curl -sv http://$BACKEND_IP/actuator/health) # Send a request to the application's /actuator/health endpoint
+            sleep 30 # Wait for the application to start
+            RESPONSE=$(curl -s http://$BACKEND_IP/actuator/health 2>&1) # Send a request to the application's /actuator/health endpoint
             echo $RESPONSE
-            if [[ "$RESPONSE" == *"\"status\":\"UP\""* ]]; then
+            if echo "$RESPONSE" | grep -q "UP"; then
               echo "Application is running and healthy"
             else
               echo "Application is not running or is not healthy"
