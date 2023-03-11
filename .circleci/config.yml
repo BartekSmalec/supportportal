@@ -8,7 +8,7 @@ jobs:
   # Below is the definition of your job to build and test your app, you can rename and customize it as you want.
   build-and-test:
     machine: true
-    parallelism: 2
+    parallelism: 4
 
     steps:
       # Checkout the code as the first step.
@@ -33,12 +33,18 @@ jobs:
       - run:
           name: Run tests
           command: |
-            TEST_FILES="$(find src/test/java -name '*Test.java' | xargs -I {} echo "file://{}")"
-            TEST_FILES_PER_CPU=$(echo "$TEST_FILES" | wc -l | awk '{print int($1/4)}')
-            for i in $(seq 1 4); do
-              echo "Running tests on CPU $i"
-              echo "$TEST_FILES" | sed "${i}q;d" | xargs -I {} mvn -B -Dtest={} test
-            done
+              cd src/test/java
+              # Get list of classnames of tests that should run on this node
+              CLASSNAMES=$(circleci tests glob "**/*.java" \
+              | cut -c 1- | sed 's@/@.@g' \
+              | sed 's/.\{5\}$//' \
+              | circleci tests split --split-by=timings --timings-type=classname)
+
+              # Convert classnames to file paths
+              FILEPATHS=$(echo $CLASSNAMES | sed 's@\.@/@g' | sed 's/$/.java/')
+
+              # Run Maven test command with the file paths
+              mvn test -Dtest=$FILEPATHS
 
           
       # check code with spotless
