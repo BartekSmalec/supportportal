@@ -7,6 +7,32 @@
 
 Simple app for managing user accounts. Login by JWT token. More screens of application in screenshot folder. Here’s [link](https://github.com/BartekSmalec/supportportal-front) to frontend repo. [Demo](http://18.185.238.10/) on ec2 instance: 
 
+## Technology stack
+
+### Backend:
+
+| Technology | Description |
+| --- | --- |
+| Spring Boot | Framework for building Java applications |
+| Spring Boot Starter Data JPA | Library for connecting to and interacting with databases |
+| Lombok | Library for reducing boilerplate code in Java classes |
+| Java JWT | Library for working with JSON Web Tokens |
+| Springfox | Library for generating Swagger documentation |
+| Flyway | Library for managing database schema migrations |
+| PostgreSQL | Relational database |
+| Testcontainers | Library for managing Docker containers in integration tests |
+| Maven | Build automation tool |
+
+### Frontend:
+
+| Technology | Description |
+| --- | --- |
+| Angular CLI | Command-line interface for Angular development |
+| Node | JavaScript runtime |
+| NPM | Package manager for Node |
+| Bootstrap | Front-end framework for building responsive web designs |
+
+
 ## Continuous Integration/Continuous Deployment (CI/CD) Pipeline
 
 This repository uses CircleCI to automatically build, test, and deploy code changes.
@@ -15,8 +41,8 @@ This repository uses CircleCI to automatically build, test, and deploy code chan
 
 The pipeline consists of two jobs that are executed sequentially in a workflow:
 
-1.  **build-and-test**: builds and tests the application using Maven and runs Spotless check.
-2.  **deploy-to-ec2**: deploys the application to an EC2 instance using SSH and Docker.
+1.  **build-and-test**: 
+2.  **deploy-to-ec2**: 
 
 ### Job Details
 
