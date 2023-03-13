@@ -85,8 +85,7 @@ public class UserResource extends ExceptionHandling {
     return new ResponseEntity<>(newUser, HttpStatus.CREATED);
   }
 
-  @PreAuthorize(
-      "hasAnyAuthority('user:update') or #currentUsername == authentication.principal.username")
+  @PreAuthorize("hasAnyAuthority('user:update') OR #currentUsername == principal")
   @PostMapping("/update")
   public ResponseEntity<User> update(
       @NotBlank @RequestParam("currentUsername") String currentUsername,
@@ -115,8 +114,7 @@ public class UserResource extends ExceptionHandling {
     return new ResponseEntity<>(updateUser, HttpStatus.CREATED);
   }
 
-  @PreAuthorize(
-      "hasAnyAuthority('user:update') or #currentUsername == authentication.principal.username")
+  @PreAuthorize("hasAnyAuthority('user:update') OR #currentUsername == principal")
   @PostMapping("/updateProfileImage")
   public ResponseEntity<User> updateProfileImage(
       @NotBlank @RequestParam("username") String username,
@@ -149,7 +147,7 @@ public class UserResource extends ExceptionHandling {
   }
 
   @GetMapping("/resetPassword/{email}")
-  @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_ADMIN')")
+  @PreAuthorize("hasAnyRole('ROLE_SUPER_ADMIN','ROLE_ADMIN')")
   public ResponseEntity<HttpResponse> resetPassword(
       @NotBlank @Email @PathVariable("email") String email) throws EmailNotFoundException {
     userService.resetPassword(email);
