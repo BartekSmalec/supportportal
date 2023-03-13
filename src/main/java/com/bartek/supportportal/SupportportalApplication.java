@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.CorsEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
@@ -34,6 +35,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @Configuration
 @EnableWebMvc
 public class SupportportalApplication {
+  @Value("${frontend.url}")
+  private String frontendUrl;
 
   public static void main(String[] args) {
     SpringApplication.run(SupportportalApplication.class, args);
@@ -57,8 +60,7 @@ public class SupportportalApplication {
         new UrlBasedCorsConfigurationSource();
     CorsConfiguration corsConfiguration = new CorsConfiguration();
     corsConfiguration.setAllowCredentials(true);
-    corsConfiguration.setAllowedOrigins(
-        Arrays.asList("http://localhost:4200", "http://18.196.218.229", "http://18.185.238.10"));
+    corsConfiguration.setAllowedOrigins(Arrays.asList(frontendUrl));
     corsConfiguration.setAllowedHeaders(
         Arrays.asList(
             "Origin",

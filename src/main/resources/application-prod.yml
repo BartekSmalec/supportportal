@@ -42,3 +42,5 @@ management:
     web:
       exposure:
         include: "*"
+frontend:
+  url: "http://18.185.238.10"
