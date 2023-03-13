@@ -12,9 +12,6 @@ spring:
     password: sa
     username: sa
   jpa:
-#    show-sql: true
-#    hibernate:
-#      ddl-auto: create
     properties:
       dialect: org.hibernate.dialect.MySQL8Dialect
 
@@ -22,7 +19,9 @@ logging:
   level:
     root: debug
 jwt:
-  secret: 'FdMSpY6dNFlEF3zHVhhIkXEZ0udQCdyzQslxnO9n'
+  secret: 'LTzn2hPBJLf5dDRb'
 email:
   username: 'smalecbartlomiej@outlook.com'
-  password: 'lWSh4xV4bPXoLps3E'
+  password: '*************'
+frontend:
+  url: "http://localhost:4200"
