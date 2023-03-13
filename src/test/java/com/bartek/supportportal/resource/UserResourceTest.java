@@ -190,7 +190,7 @@ class UserResourceTest {
   @Test
   @WithMockUser(
       username = "admin",
-      roles = {"ADMIN"})
+      authorities = {"user:create"})
   void addAuthenticated() throws Exception {
     doNothing().when(emailService).sendNewPasswordEmail(anyString(), anyString(), anyString());
 
@@ -212,7 +212,7 @@ class UserResourceTest {
   @Test
   @WithMockUser(
       username = "admin",
-      roles = {"ADMIN"})
+      authorities = {"user:update"})
   void updateAuthenticated() throws Exception {
     mockMvc
         .perform(
@@ -233,7 +233,7 @@ class UserResourceTest {
   @Test
   @WithMockUser(
       username = "admin",
-      roles = {"ADMIN"})
+      authorities = {"user:update"})
   void updateAuthenticatedCurrentUserDontExist() throws Exception {
     mockMvc
         .perform(
@@ -497,7 +497,7 @@ class UserResourceTest {
   @Test
   @WithMockUser(
       username = "admin",
-      roles = {"ADMIN"})
+      authorities = {"user:update"})
   void updateProfileImage() throws Exception {
     FileInputStream avatar = new FileInputStream(AVATAR_JPG);
     MockMultipartFile multipartFile =
@@ -518,7 +518,7 @@ class UserResourceTest {
   @Test
   @WithMockUser(
       username = "admin",
-      roles = {"ADMIN"})
+      authorities = {"user:update"})
   void updateProfileImageWithNotAnImage() throws Exception {
     FileInputStream avatar = new FileInputStream(AVATAR_JPG);
     MockMultipartFile multipartFile =
