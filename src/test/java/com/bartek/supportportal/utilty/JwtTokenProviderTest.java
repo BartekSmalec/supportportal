@@ -7,7 +7,6 @@ import com.bartek.supportportal.domain.User;
 import com.bartek.supportportal.domain.UserPrincipal;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -54,7 +53,6 @@ class JwtTokenProviderTest {
   }
 
   @Test
-  @Disabled
   void testIsTokenValid() {
     // TODO check why it throws "com.auth0.jwt.exceptions.SignatureVerificationException" instead of
     // TokenExpiredException.class

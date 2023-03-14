@@ -30,7 +30,7 @@ logging:
   level:
     root: debug
 jwt:
-  secret: 'LTzn2hPBJLf5dDRb'
+  secret: 'FdMSpY6dNFlEF3zHVhhIkXEZ0udQCdyzQslxnO9n'
 email:
   username: 'smalecbartlomiej@outlook.com'
   password: '**********'
