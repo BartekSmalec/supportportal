@@ -5,6 +5,8 @@ import static com.bartek.supportportal.constant.SecurityConstant.JWT_TOKEN_HEADE
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 
+import com.bartek.supportportal.domain.DTO.UserLogin;
+import com.bartek.supportportal.domain.DTO.UserRegister;
 import com.bartek.supportportal.domain.HttpResponse;
 import com.bartek.supportportal.domain.User;
 import com.bartek.supportportal.domain.UserPrincipal;
@@ -50,7 +52,7 @@ public class UserResource extends ExceptionHandling {
   private final JwtTokenProvider tokenProvider;
 
   @PostMapping("/register")
-  public ResponseEntity<User> register(@Valid @RequestBody User user)
+  public ResponseEntity<User> register(@Valid @RequestBody UserRegister user)
       throws UserNotFoundException, EmailExistException, UsernameExistException {
     User newUser =
         userService.register(
@@ -126,7 +128,7 @@ public class UserResource extends ExceptionHandling {
   }
 
   @PostMapping("/login")
-  public ResponseEntity<User> login(@RequestBody User user) {
+  public ResponseEntity<User> login(@RequestBody UserLogin user) {
     authenticate(user.getUsername(), user.getPassword());
     User loginUser = userService.findUserByUsername(user.getUsername());
     UserPrincipal userPrincipal = new UserPrincipal(loginUser);
