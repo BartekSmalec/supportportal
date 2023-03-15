@@ -26,7 +26,7 @@ jobs:
       # Use mvn clean and package as the standard maven build phase
       - run:
           name: Test and  build jar
-          command: mvn -T 4 -B -V clean verify          
+          command: mvn -B -V clean verify          
       # check code with spotless
       - run:
           name: Run Spotless check
