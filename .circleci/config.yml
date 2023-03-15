@@ -32,7 +32,7 @@ jobs:
       - save_cache:
           paths:
             - ~/.m2
-          key: v1-dependencies-{{ checksum "pom.xml" }
+          key: v1-dependencies-{{ checksum "pom.xml" }}
                       
       # Use mvn clean and package as the standard maven build phase
       - run:
