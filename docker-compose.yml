@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:15.2
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: supportportal
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+
+  app:
+    build: .
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/supportportal?useSSL=false&useUnicode=yes&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+  front:
+    image: infamia/supportportal:v2
+    ports:
+      - "4200:80"
+
+volumes:
+  postgres-data:
+
+
