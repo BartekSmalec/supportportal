@@ -1,7 +1,6 @@
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/BartekSmalec/supportportal/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/BartekSmalec/supportportal/tree/main)
 [![codecov](https://codecov.io/gh/BartekSmalec/supportportal/branch/main/graph/badge.svg?token=etJT0Qyq7y)](https://codecov.io/gh/BartekSmalec/supportportal)
-![Spotless Java](https://img.shields.io/badge/spotless%20java-CHECKED-green)
-
+![Spotless](https://img.shields.io/badge/spotless-CHECKED-green)
 
 # Support Portal
 
@@ -55,6 +54,8 @@ This job is responsible for building and testing the application. It uses Maven 
 This job deploys the application to an EC2 instance using SSH and built jar file. It requires the artifacts from the Build and Test job and runs the application on the EC2 instance.
 
 ### Workflow
+
+[![CircleCI](https://dl.circleci.com/insights-snapshot/gh/BartekSmalec/supportportal/main/supportportal-workflow/badge.svg?window=30d)](https://app.circleci.com/insights/github/BartekSmalec/supportportal/workflows/supportportal-workflow/overview?branch=main&reporting-window=last-30-days&insights-snapshot=true)
 
 The workflow consists of two jobs that are executed sequentially:
 
