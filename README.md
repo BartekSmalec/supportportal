@@ -4,8 +4,7 @@
 
 # Support Portal
 
-Simple app for managing user accounts. Login by JWT token. More screens of application in screenshot folder. Here’s [link](https://github.com/BartekSmalec/supportportal-front) to frontend repo. [Demo](http://18.185.238.10/) on ec2 instance: 
-
+Simple app for managing user accounts. Login by JWT token. More screens of application in screenshot folder. Here’s [link](https://github.com/BartekSmalec/supportportal-front) to frontend repo. ~~[Demo](http://18.185.238.10/) on ec2 instance:~~ 
 ## Technology stack
 
 ### Backend:
