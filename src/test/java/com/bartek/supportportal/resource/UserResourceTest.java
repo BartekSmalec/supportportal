@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.bartek.supportportal.domain.DTO.UserRegister;
 import com.bartek.supportportal.domain.User;
 import com.bartek.supportportal.exception.domain.*;
 import com.bartek.supportportal.repository.UserRepository;
@@ -65,6 +66,8 @@ class UserResourceTest {
 
   User one, two, three, fourth;
 
+  UserRegister oneRegister, threeRegister;
+
   @BeforeEach
   void setUp() {
     userRepository.flush();
@@ -82,6 +85,16 @@ class UserResourceTest {
             //.authorities(authorities_user)
             .password(new BCryptPasswordEncoder().encode(PASSWORD))
             .build();
+
+    oneRegister = UserRegister.builder()
+            .email("one@gmail.com")
+            .firstName("Joe")
+            .lastName("Doe")
+            .username(USERNAME)
+            .password("test1234")
+            .repeatPassword("test1234")
+            .build();
+
 
     two =
         User.builder()
@@ -103,6 +116,15 @@ class UserResourceTest {
             .firstName("Rick")
             .lastName("Morty")
             .username("rmorty")
+            .build();
+
+    threeRegister = UserRegister.builder()
+            .email(three.getEmail())
+            .firstName("Joe")
+            .lastName("Doe")
+            .username(three.getUsername())
+            .password("test1234")
+            .repeatPassword("test1234")
             .build();
 
     fourth =
@@ -129,7 +151,7 @@ class UserResourceTest {
         .perform(
             post(API_ROOT + "/register")
                 .contentType(APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(three)))
+                .content(objectMapper.writeValueAsString(threeRegister)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.email", Matchers.is(three.getEmail())));
   }
@@ -143,7 +165,7 @@ class UserResourceTest {
         .perform(
             post(API_ROOT + "/register")
                 .contentType(APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(one)))
+                .content(objectMapper.writeValueAsString(oneRegister)))
         .andExpect(status().isBadRequest())
         .andExpect(
             result -> assertTrue(result.getResolvedException() instanceof UsernameExistException));
@@ -154,13 +176,13 @@ class UserResourceTest {
 
     doNothing().when(emailService).sendNewPasswordEmail(anyString(), anyString(), anyString());
 
-    three.setEmail(one.getEmail());
+    threeRegister.setEmail(one.getEmail());
 
     mockMvc
         .perform(
             post(API_ROOT + "/register")
                 .contentType(APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(three)))
+                .content(objectMapper.writeValueAsString(threeRegister)))
         .andExpect(status().isBadRequest())
         .andExpect(
             result -> assertTrue(result.getResolvedException() instanceof EmailExistException));
@@ -197,6 +219,7 @@ class UserResourceTest {
             post(API_ROOT + "/add")
                 .contentType(MULTIPART_FORM_DATA)
                 .param("email", fourth.getEmail())
+                .param("password", "test1234")
                 .param("firstName", fourth.getFirstName())
                 .param("isActive", String.valueOf(fourth.isActive()))
                 .param("lastName", fourth.getLastName())

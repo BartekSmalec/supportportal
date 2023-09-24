@@ -29,12 +29,14 @@ spring:
 
 logging:
   level:
-    root: debug
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 management:
   endpoints:
     web:
       exposure:
         include: "*"
+
 
 frontend:
   url: "http://localhost:4200"

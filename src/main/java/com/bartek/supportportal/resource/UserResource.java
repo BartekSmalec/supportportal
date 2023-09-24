@@ -11,10 +11,7 @@ import com.bartek.supportportal.domain.HttpResponse;
 import com.bartek.supportportal.domain.User;
 import com.bartek.supportportal.domain.UserPrincipal;
 import com.bartek.supportportal.exception.ExceptionHandling;
-import com.bartek.supportportal.exception.domain.EmailExistException;
-import com.bartek.supportportal.exception.domain.EmailNotFoundException;
-import com.bartek.supportportal.exception.domain.UserNotFoundException;
-import com.bartek.supportportal.exception.domain.UsernameExistException;
+import com.bartek.supportportal.exception.domain.*;
 import com.bartek.supportportal.service.UserService;
 import com.bartek.supportportal.utilty.JwtTokenProvider;
 import java.io.ByteArrayOutputStream;
@@ -53,10 +50,10 @@ public class UserResource extends ExceptionHandling {
 
   @PostMapping("/register")
   public ResponseEntity<User> register(@Valid @RequestBody UserRegister user)
-      throws UserNotFoundException, EmailExistException, UsernameExistException {
+          throws UserNotFoundException, EmailExistException, UsernameExistException, PasswordsDontMatchException {
     User newUser =
         userService.register(
-            user.getFirstName(), user.getLastName(), user.getUsername(), user.getEmail());
+            user.getFirstName(), user.getLastName(), user.getUsername(), user.getEmail(), user.getPassword(), user.getRepeatPassword());
     return new ResponseEntity<>(newUser, OK);
   }
 
@@ -67,6 +64,7 @@ public class UserResource extends ExceptionHandling {
       @NotBlank @RequestParam String lastName,
       @NotBlank @RequestParam String username,
       @NotBlank @Email @RequestParam String email,
+      @NotBlank @RequestParam String password,
       @NotBlank @RequestParam String role,
       @NotBlank @RequestParam String isActive,
       @NotBlank @RequestParam String nonLocked,
@@ -79,6 +77,7 @@ public class UserResource extends ExceptionHandling {
             lastName,
             username,
             email,
+            password,
             role,
             Boolean.parseBoolean(nonLocked),
             Boolean.parseBoolean(isActive),

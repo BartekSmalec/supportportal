@@ -74,13 +74,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
   }
 
   @Override
-  public User register(String firstName, String lastName, String username, String email)
-      throws UserNotFoundException, EmailExistException, UsernameExistException {
+  public User register(String firstName, String lastName, String username, String email, String password, String repeatPassword)
+          throws UserNotFoundException, EmailExistException, UsernameExistException, PasswordsDontMatchException {
 
     validateNewUsernameAndEmail(EMPTY, username, email);
+    validateIfPasswordsAreEqual(password, repeatPassword);
     User user = new User();
     user.setUserId(generateUserId());
-    String password = generatePassword();
     String encodedPassword = encodePassword(password);
     user.setPassword(encodedPassword);
     user.setFirstName(firstName);
@@ -94,10 +94,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     //user.setAuthorities(ROLE_USER.getAuthorities());
     user.setProfileImageUrl(getDefaultProfileImageUrl(username));
 
+    log.info(user.toString());
+
     User savedUser = userRepository.save(user);
-    emailService.sendNewPasswordEmail(savedUser.getFirstName(), password, email);
+    //emailService.sendNewPasswordEmail(savedUser.getFirstName(), password, email);
     log.info("New user password: " + password);
     return savedUser;
+  }
+
+  private void validateIfPasswordsAreEqual(String password, String repeatPassword) throws PasswordsDontMatchException {
+    if (!password.equals(repeatPassword)) {
+      throw new PasswordsDontMatchException("Passwords are not equal");
+    }
   }
 
   private String getDefaultProfileImageUrl(String username) {
@@ -169,6 +177,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
       String lastName,
       String username,
       String email,
+      String password,
       String role,
       boolean isNonLocked,
       boolean isActive,
@@ -177,7 +186,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     validateNewUsernameAndEmail(EMPTY, username, email);
     User user = new User();
-    String password = generatePassword();
+    //
     String encodedPassword = encodePassword(password);
     user.setUserId(generateUserId());
     user.setUsername(username);
@@ -194,7 +203,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     User savedUser = userRepository.save(user);
     saveProfileImage(savedUser, profileImage);
 
-    emailService.sendNewPasswordEmail(savedUser.getFirstName(), password, email);
+    //emailService.sendNewPasswordEmail(savedUser.getFirstName(), password, email);
     log.info("New user password: " + password);
     return user;
   }

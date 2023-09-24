@@ -1,17 +1,15 @@
 package com.bartek.supportportal.service;
 
 import com.bartek.supportportal.domain.User;
-import com.bartek.supportportal.exception.domain.EmailExistException;
-import com.bartek.supportportal.exception.domain.EmailNotFoundException;
-import com.bartek.supportportal.exception.domain.UserNotFoundException;
-import com.bartek.supportportal.exception.domain.UsernameExistException;
+import com.bartek.supportportal.exception.domain.*;
+
 import java.io.IOException;
 import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
-  User register(String firstName, String lastName, String username, String email)
-      throws UserNotFoundException, EmailExistException, UsernameExistException;
+  User register(String firstName, String lastName, String username, String email, String password, String repeatPassword)
+          throws UserNotFoundException, EmailExistException, UsernameExistException, PasswordsDontMatchException;
 
   List<User> getUsers();
 
@@ -24,6 +22,7 @@ public interface UserService {
       String lastName,
       String username,
       String email,
+      String password,
       String role,
       boolean isNonLocked,
       boolean isActive,
