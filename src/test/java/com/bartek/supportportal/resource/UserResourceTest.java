@@ -17,12 +17,11 @@ import com.bartek.supportportal.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.FileInputStream;
 import java.util.Arrays;
-import javax.validation.ConstraintViolationException;
+import jakarta.validation.ConstraintViolationException;
 import net.minidev.json.JSONObject;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,18 +34,16 @@ import org.springframework.security.authentication.LockedException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @SpringBootTest
-@ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
 @Transactional
-@Testcontainers
-@ActiveProfiles("test-containers")
+//@Testcontainers
+//@ActiveProfiles("test-containers")
 class UserResourceTest {
 
   private static final String API_ROOT = "/user";
@@ -81,7 +78,8 @@ class UserResourceTest {
             .username(USERNAME)
             .isActive(true)
             .isNonLocked(true)
-            .authorities(authorities_user)
+                .role("ROLE_USER")
+            //.authorities(authorities_user)
             .password(new BCryptPasswordEncoder().encode(PASSWORD))
             .build();
 
@@ -95,7 +93,7 @@ class UserResourceTest {
             .role("ROLE_ADMIN")
             .isActive(true)
             .isNonLocked(true)
-            .authorities(authorities_user)
+            //.authorities(authorities_user)
             .password(new BCryptPasswordEncoder().encode(PASSWORD))
             .build();
 
@@ -116,7 +114,7 @@ class UserResourceTest {
             .role("ROLE_USER")
             .isActive(false)
             .isNonLocked(false)
-            .authorities(authorities_user)
+            //.authorities(authorities_user)
             .build();
 
     userRepository.saveAll(Arrays.asList(one, two));

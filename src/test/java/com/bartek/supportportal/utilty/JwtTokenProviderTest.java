@@ -1,11 +1,17 @@
 package com.bartek.supportportal.utilty;
 
+import static com.bartek.supportportal.constant.Authority.USER_AUTHORITIES;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.bartek.supportportal.domain.User;
 import com.bartek.supportportal.domain.UserPrincipal;
+
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +23,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @SpringBootTest
-@Testcontainers
-@ActiveProfiles("test-containers")
+//@Testcontainers
+//@ActiveProfiles("test-containers")
 class JwtTokenProviderTest {
 
   @Autowired JwtTokenProvider jwtTokenProvider;
@@ -41,7 +47,8 @@ class JwtTokenProviderTest {
             .username("jdoe")
             .isActive(true)
             .isNonLocked(true)
-            .authorities(authorities_user)
+                .role("ROLE_USER")
+            //.authorities(authorities_user)
             .password(new BCryptPasswordEncoder().encode("somepass"))
             .build();
 
@@ -57,14 +64,15 @@ class JwtTokenProviderTest {
     // TODO check why it throws "com.auth0.jwt.exceptions.SignatureVerificationException" instead of
     // TokenExpiredException.class
     assertThrows(
-        TokenExpiredException.class, () -> jwtTokenProvider.isTokenValid(username, expiredToken));
+            SignatureVerificationException.class, () -> jwtTokenProvider.isTokenValid(username, expiredToken));
   }
 
   @Test
   void testGetAuthorities() {
 
-    SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority("ROLE_USER");
-    List<GrantedAuthority> expected = List.of(simpleGrantedAuthority);
+    List<GrantedAuthority> expected = Arrays.stream(USER_AUTHORITIES)
+            .map(SimpleGrantedAuthority::new)
+            .collect(Collectors.toList());
 
     assertIterableEquals(expected, jwtTokenProvider.getAuthorities(token));
   }

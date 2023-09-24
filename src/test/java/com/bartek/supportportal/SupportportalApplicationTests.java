@@ -6,8 +6,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @SpringBootTest
-@Testcontainers
-@ActiveProfiles("test-containers")
+//@Testcontainers
+//@ActiveProfiles("test-containers")
 class SupportportalApplicationTests {
 
   @Test

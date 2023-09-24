@@ -13,7 +13,7 @@ spring:
     username: sa
   jpa:
     properties:
-      dialect: org.hibernate.dialect.MySQL8Dialect
+      dialect: platform=org.hibernate.dialect.H2Dialect
 
 logging:
   level:

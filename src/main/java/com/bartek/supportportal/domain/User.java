@@ -3,9 +3,9 @@ package com.bartek.supportportal.domain;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.util.Date;
-import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Getter
@@ -45,7 +45,6 @@ public class User implements Serializable {
   private Date lastLoginDateDisplay;
   private Date joinDate;
   private String role;
-  private String[] authorities;
   private boolean isActive;
   private boolean isNonLocked;
 }

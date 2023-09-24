@@ -14,8 +14,7 @@ public class AuthenticationFailureListener {
   @EventListener
   public void onAuthenticationFailure(AuthenticationFailureBadCredentialsEvent event) {
     Object principal = event.getAuthentication().getPrincipal();
-    if (principal instanceof String) {
-      String username = (String) principal;
+    if (principal instanceof String username) {
       loginAttemptService.addUserLoginAttemptCache(username);
     }
   }

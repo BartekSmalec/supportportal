@@ -91,7 +91,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     user.setActive(true);
     user.setNonLocked(true);
     user.setRole(ROLE_USER.name());
-    user.setAuthorities(ROLE_USER.getAuthorities());
+    //user.setAuthorities(ROLE_USER.getAuthorities());
     user.setProfileImageUrl(getDefaultProfileImageUrl(username));
 
     User savedUser = userRepository.save(user);
@@ -189,7 +189,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     user.setNonLocked(isNonLocked);
     user.setActive(isActive);
     user.setRole(getRoleEnumName(role).name());
-    user.setAuthorities(getRoleEnumName(role).getAuthorities());
+    //user.setAuthorities(getRoleEnumName(role).getAuthorities());
     user.setProfileImageUrl(getDefaultProfileImageUrl(username));
     User savedUser = userRepository.save(user);
     saveProfileImage(savedUser, profileImage);
@@ -255,7 +255,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     currentUser.setNonLocked(isNonLocked);
     currentUser.setActive(isActive);
     currentUser.setRole(getRoleEnumName(role).name());
-    currentUser.setAuthorities(getRoleEnumName(role).getAuthorities());
+    //currentUser.setAuthorities(getRoleEnumName(role).getAuthorities());
     User savedUser = userRepository.save(currentUser);
     saveProfileImage(savedUser, profileImage);
     return currentUser;
